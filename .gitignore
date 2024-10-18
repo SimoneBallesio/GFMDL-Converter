@@ -15,3 +15,6 @@ Data/**
 
 # macOS artifacts
 **/.DS_Store
+
+# Version file
+GFMDL-Converter/src/Version.hpp
