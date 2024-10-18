@@ -1,6 +1,7 @@
 #include "Pch.hpp"
-
 #include "Version.hpp"
+
+#include "Parsers/GfmdlParser.hpp"
 
 enum CommandLineArg
 {
@@ -30,6 +31,11 @@ int main(int argc, char* argv[])
 		std::cerr << "ERROR - Invalid paths specified for file conversion.\n";
 		return 1;
 	}
+
+	GFMDLConv::GFMDLParser parser;
+
+	if (!parser.Parse(std::move(state.PathIn.c_str())))
+		return 1;
 
 	return 0;
 }
