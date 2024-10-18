@@ -1,0 +1,3 @@
+[submodule "GFMDL-Converter/vendor/pugixml"]
+	path = GFMDL-Converter/vendor/pugixml
+	url = https://github.com/SimoneBallesio/pugixml
