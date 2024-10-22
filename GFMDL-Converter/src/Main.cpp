@@ -3,6 +3,8 @@
 
 #include "Parsers/GfmdlParser.hpp"
 
+#include "Output/Converter.hpp"
+
 enum CommandLineArg
 {
 	None = 0,
@@ -13,6 +15,7 @@ enum CommandLineArg
 struct State
 {
 	std::string PathIn = "";
+	OutputFormat OutFormat = OutputFormat::Unsupported;
 	std::string PathOut = "";
 	bool VerboseTrace = false;
 };
@@ -40,7 +43,14 @@ int main(int argc, char* argv[])
 		std::cerr << "\nERROR: Unable to parse source file.\n";
 		return 1;
 	}
+
+	GFMDLConv::Converter conv(parser.GetMeshes(), state.OutFormat, state.PathOut);
+
+	if (!conv.IsOK())
+	{
+		std::cerr << "\nERROR: The conversion process failed (see above for details).\n";
 		return 1;
+	}
 
 	return 0;
 }
@@ -122,6 +132,11 @@ static bool ParseCommandLineArgs(int argc, char** argv, State& state)
 					continue;
 				}
 
+				std::filesystem::path p(arg);
+
+				if (strcmp(p.extension().c_str(), ".obj") == 0)
+					state.OutFormat = OutputFormat::WavefrontObj;
+
 				state.PathOut = arg;
 				continue;
 			}
@@ -153,7 +168,8 @@ static void DisplayHelpMessage()
 	          << "--help, -h                   Display this message\n"
 	          << "--version, -v                Display the program's version\n"
 	          << "-c <path/to/source.gfmdl>    Specify the source file path\n"
-	          << "-o <path/to/output.ext>      Specify the output file path\n\n";
+	          << "-o <path/to/output.ext>      Specify the output file path\n"
+	          << "                             Formats supported: OBJ\n\n";
 }
 
 static bool IsStateValid(const State& state)
@@ -162,7 +178,7 @@ static bool IsStateValid(const State& state)
 
 #ifndef GFMDL_CONV_SKIP_OUTPUT
 
-	valid &= state.PathOut.size() > 0;
+	valid &= (state.PathOut.size() > 0 && state.OutFormat != OutputFormat::Unsupported);
 
 	if (valid && std::filesystem::exists(state.PathOut))
 	{
