@@ -11,14 +11,18 @@ namespace GFMDLConv
 		GFMDLParser() = default;
 		GFMDLParser(GFMDLParser&) = delete;
 
-		~GFMDLParser() = default;
+		~GFMDLParser();
+
+		const std::vector<RawMesh*>& GetMeshes() const;
 
 		bool Parse(const char* path);
 
 		GFMDLParser& operator=(GFMDLParser&) = delete;
 
 	private:
-		std::vector<Mesh> m_Meshes;
+		std::vector<RawMesh*> m_RawMeshes;
+
+		bool DestroyRawMesh(RawMesh* mesh);
 	};
 
 }

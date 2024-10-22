@@ -14,6 +14,7 @@ struct State
 {
 	std::string PathIn = "";
 	std::string PathOut = "";
+	bool VerboseTrace = false;
 };
 
 static bool ParseCommandLineArgs(int argc, char** argv, State& state);
@@ -28,13 +29,17 @@ int main(int argc, char* argv[])
 
 	if (!IsStateValid(state))
 	{
-		std::cerr << "ERROR - Invalid paths specified for file conversion.\n";
+		std::cerr << "ERROR: Invalid paths or output format specified for file conversion, see --help for usage.\n";
 		return 1;
 	}
 
 	GFMDLConv::GFMDLParser parser;
 
 	if (!parser.Parse(std::move(state.PathIn.c_str())))
+	{
+		std::cerr << "\nERROR: Unable to parse source file.\n";
+		return 1;
+	}
 		return 1;
 
 	return 0;
@@ -67,6 +72,12 @@ static bool ParseCommandLineArgs(int argc, char** argv, State& state)
 				{
 					std::cout << GFMDL_CONV_VERSION_MAJOR << '.' << GFMDL_CONV_VERSION_MINOR << '.' << GFMDL_CONV_VERSION_PATCH << '\n';
 					return 0;
+				}
+
+				else if (arg == "--verbose")
+				{
+					state.VerboseTrace = true;
+					continue;
 				}
 
 				else if (arg == "-c")
